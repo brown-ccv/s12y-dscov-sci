@@ -1,0 +1,32 @@
+name: empty default
+description: example manifest to error with empty defaults
+tags:
+initialize:
+  plugins:
+    divide-thing:
+      path: "builtin"
+      method: Divide
+      config:
+        numerator: a
+        denominator: b
+        output: c
+
+tree:
+  children:
+    job:
+      defaults:
+        grid/carbon-intensity: 23
+      pipeline:
+        observe:
+        regroup:
+        compute:
+          - divide-thing
+        inputs:
+          - a: 32.694612
+            b: 32.327209
+            duration: 1.0
+            timestamp: 123
+          - a: 32.694612
+            b: 32.327209
+            duration: 1.0
+            timestamp: 456

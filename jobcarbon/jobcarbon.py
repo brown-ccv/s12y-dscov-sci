@@ -7,7 +7,7 @@ import yaml
 PROMETHEUS_SERVER = "http://slurm02:9390/api/v1"
 QUERY_RANGE_ENDPOINT = f"{PROMETHEUS_SERVER}/query_range"
 QUERY_ENDPOINT = f"{PROMETHEUS_SERVER}/query"
-STEP_SECONDS = 30
+STEP_SECONDS = 60
 
 
 def get_overall_metric(resp):
@@ -29,7 +29,16 @@ def get_overall_metric(resp):
 
 def get_metric_name(result):
     metric = result["metric"]
-    return metric["__name__"]
+    name = metric["__name__"]
+
+    if name == 'cgroup_cpu_system_seconds':
+        return 'cpu/system-seconds'
+    elif name == 'cgroup_cpu_total_seconds':
+        return 'cpu/total-seconds'
+    elif name == 'cgroup_cpu_user_seconds':
+        return 'cpu/user-seconds'
+
+    raise Exception(f'unsupported metric found {name}')
 
 
 def get_node_name(result):
@@ -44,13 +53,13 @@ def get_job_id(result):
 
 
 def get_metric_data(result):
-    return result["values"]
+    retyped_results = list(map(lambda x: [x[0], float(x[1])], result["values"]))
+    return retyped_results
 
 
 def zipper_metric_data(a, b, c):
-    output = {}
+    output = []
     for key in a.keys():
-        output[key] = {"inputs": []}
         a_overall = a[key]
         b_overall = b[key]
         c_overall = c[key]
@@ -59,6 +68,12 @@ def zipper_metric_data(a, b, c):
         b_name = get_metric_name(b_overall)
         c_name = get_metric_name(c_overall)
 
+        # NOTE(@broarr): This is probably overkill for what I'm trying to do
+        # TODO(@broarr): Remove the extra node checks from inside this loop
+        a_node = get_node_name(a_overall)
+        b_node = get_node_name(b_overall)
+        c_node = get_node_name(c_overall)
+
         a_values = get_metric_data(a_overall)
         b_values = get_metric_data(b_overall)
         c_values = get_metric_data(c_overall)
@@ -66,13 +81,17 @@ def zipper_metric_data(a, b, c):
         for [a_timestamp, a_value] in a_values:
             for [b_timestamp, b_value] in b_values:
                 for [c_timestamp, c_value] in c_values:
-                    if a_timestamp == b_timestamp == c_timestamp:
-                        output[key]["inputs"].append(
+                    if (
+                        a_timestamp == b_timestamp == c_timestamp
+                        and a_node == b_node == c_node
+                    ):
+                        output.append(
                             {
                                 "timestamp": a_timestamp,
                                 a_name: a_value,
                                 b_name: b_value,
                                 c_name: c_value,
+                                "node": a_node,
                                 "duration": STEP_SECONDS / 60,
                             }
                         )
@@ -89,7 +108,7 @@ def parse_responses(a, b, c):
 
     inputs = zipper_metric_data(a_overall, b_overall, c_overall)
 
-    return {"tree": {"children": {f"job{job_id}": {"children": {**inputs}}}}}
+    return {"tree": {"children": {f"job{job_id}": {"inputs": inputs}}}}
 
 
 def system_cpu_seconds(jobid, start, end):
