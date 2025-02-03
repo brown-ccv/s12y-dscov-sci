@@ -1,0 +1,14 @@
+{
+  "name": "s12y-dscov-sci",
+  "version": "1.0.0",
+  "description": "Follow along code for a DSCoV workshop at Brown University",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grnsft/if": "^1.0.0"
+  }
+}

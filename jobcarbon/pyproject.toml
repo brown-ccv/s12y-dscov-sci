@@ -1,0 +1,11 @@
+[project]
+name = "jobcarbon"
+version = "0.1.0"
+description = "generate Impact Framework observations from OSCAR jobs"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyyaml>=6.0.2",
+    "requests>=2.32.3",
+    "ruff>=0.9.4",
+]
