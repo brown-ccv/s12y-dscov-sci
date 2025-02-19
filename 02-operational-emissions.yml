@@ -1,26 +1,85 @@
 name: 02-operational-emissions
 description: pipeline to calculate embodied emissions of CPU jobs
 tags:
+aggregation:
+  metrics:
+    - carbon/operational
+    - energy
+  type: both
 initialize:
   plugins:
     utilization:
-      path: "builtin"
+      path: builtin
       method: Divide
       config:
         numerator: cpu/user-seconds
         denominator: cpu/total-seconds
         output: cpu/utilization
+    cpu-lookup:
+      path: builtin
+      method: CSVLookup
+      config:
+        filepath: ./resources/cpu-model.csv
+        query:
+          node: node-name
+        output: "*"
+    usage-to-wattage:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: ["cpu/utilization", "watts-per-core"]
+        output-parameter: "wattage-scaled"
+    duration-to-hours:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: duration
+        coefficient: "=1/60"
+        output-parameter: duration-hours
+    watts-to-kw:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: wattage-scaled
+        coefficient: "=1/1000"
+        output-parameter: kilowatts
+    calculate-energy:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: ["duration-hours", "kilowatts"]
+        output-parameter: energy
+    sci-o:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: ["grid/carbon-intensity", "energy"]
+        output-parameter: carbon/operational
+      parameter-metadata:
+        outputs:
+          carbon/operational:
+            description: Total operational carbon
+            unit: gCO2eq/KWh
+            aggregation-method:
+              time: sum
+              component: sum
 
 tree:
   children:
     job7984064:
       defaults:
-        grid/carbon-intensity: 100
+        grid/carbon-intensity: 381
       pipeline:
         observe:
         regroup:
         compute:
           - utilization
+          - cpu-lookup
+          - usage-to-wattage
+          - duration-to-hours
+          - watts-to-kw
+          - calculate-energy
+          - sci-o
       inputs:
         - cpu/system-seconds: 0.367402
           cpu/total-seconds: 32.694612

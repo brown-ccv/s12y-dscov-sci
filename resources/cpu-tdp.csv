@@ -1,0 +1,15 @@
+cpu-model,thermal-design-power,cores,watts-per-core
+AMD EPYC 7413,180,24,7.5
+AMD EPYC 7532,200,32,6.25
+AMD EPYC 7662,225,64,3.52
+AMD EPYC 7763,280,64,4.36
+AMD EPYC 9354,280,32,8.75
+AMD EPYC 9554,360,64,5.63
+AMD EPYC 9684X,400,96,4.17
+Intel Xeon E5-2698 V4,135,20,6.75
+Intel Xeon Gold 6126,125,12,10.42
+Intel Xeon Gold 6142,150,16,9.36
+Intel Xeon Gold 6242,150,16,9.36
+Intel Xeon Platinum 8268,205,24,8.54
+Intel Xeon Platinum 8358,250,32,7.81
+Intel Xeon Platinum 8480C,350,56,6.25
