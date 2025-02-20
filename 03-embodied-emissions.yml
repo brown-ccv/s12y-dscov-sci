@@ -1,0 +1,144 @@
+name: 03-embodied-emissions
+description: pipeline to calculate embodied emissions of CPU jobs
+tags:
+aggregation:
+  metrics:
+    - carbon/embodied
+  type: both
+initialize:
+  plugins:
+    cpu-lookup:
+      path: builtin
+      method: CSVLookup
+      config:
+        filepath: ./resources/cpu-model.csv
+        query:
+          node: node-name
+        output: "*"
+    embodied-carbon:
+      path: builtin
+      method: SciEmbodied
+      config:
+        lifespan: 1.578e+8
+        duration: 60
+        output-parameter: carbon/embodied
+      mapping:
+        vCPUs: cores-allocated
+      parameter-metadata:
+        outputs:
+          carbon/embodied:
+            description: Total embodied carbon
+            unit: gCO2eq
+            aggregation-method:
+              time: sum
+              component: sum
+
+tree:
+  children:
+    job7984064:
+      defaults:
+        cores-allocated: 2
+        memory: 4
+      pipeline:
+        observe:
+        regroup:
+        compute:
+          - cpu-lookup
+          - embodied-carbon
+      inputs:
+        - cpu/system-seconds: 0.367402
+          cpu/total-seconds: 32.694612
+          cpu/user-seconds: 32.327209
+          duration: 1.0
+          node: node1318
+          timestamp: 1738617803
+        - cpu/system-seconds: 0.602918
+          cpu/total-seconds: 92.342047
+          cpu/user-seconds: 91.739128
+          duration: 1.0
+          node: node1318
+          timestamp: 1738617863
+        - cpu/system-seconds: 0.942671
+          cpu/total-seconds: 151.930837
+          cpu/user-seconds: 150.988165
+          duration: 1.0
+          node: node1318
+          timestamp: 1738617923
+        - cpu/system-seconds: 1.177192
+          cpu/total-seconds: 211.608131
+          cpu/user-seconds: 210.430939
+          duration: 1.0
+          node: node1318
+          timestamp: 1738617983
+        - cpu/system-seconds: 1.495147
+          cpu/total-seconds: 271.193105
+          cpu/user-seconds: 269.697958
+          duration: 1.0
+          node: node1318
+          timestamp: 1738618043
+        - cpu/system-seconds: 1.78727
+          cpu/total-seconds: 330.796453
+          cpu/user-seconds: 329.009182
+          duration: 1.0
+          node: node1318
+          timestamp: 1738618103
+        - cpu/system-seconds: 2.085316
+          cpu/total-seconds: 390.424759
+          cpu/user-seconds: 388.339442
+          duration: 1.0
+          node: node1318
+          timestamp: 1738618163
+        - cpu/system-seconds: 2.353671
+          cpu/total-seconds: 450.083889
+          cpu/user-seconds: 447.730218
+          duration: 1.0
+          node: node1318
+          timestamp: 1738618223
+        - cpu/system-seconds: 0.003974
+          cpu/total-seconds: 0.00531
+          cpu/user-seconds: 0.001336
+          duration: 1.0
+          node: node1326
+          timestamp: 1738617803
+        - cpu/system-seconds: 0.005243
+          cpu/total-seconds: 0.007005
+          cpu/user-seconds: 0.001762
+          duration: 1.0
+          node: node1326
+          timestamp: 1738617863
+        - cpu/system-seconds: 0.006489
+          cpu/total-seconds: 0.008671
+          cpu/user-seconds: 0.002181
+          duration: 1.0
+          node: node1326
+          timestamp: 1738617923
+        - cpu/system-seconds: 0.007715
+          cpu/total-seconds: 0.010308
+          cpu/user-seconds: 0.002593
+          duration: 1.0
+          node: node1326
+          timestamp: 1738617983
+        - cpu/system-seconds: 0.008942
+          cpu/total-seconds: 0.011948
+          cpu/user-seconds: 0.003006
+          duration: 1.0
+          node: node1326
+          timestamp: 1738618043
+        - cpu/system-seconds: 0.010226
+          cpu/total-seconds: 0.013663
+          cpu/user-seconds: 0.003437
+          duration: 1.0
+          node: node1326
+          timestamp: 1738618103
+        - cpu/system-seconds: 0.011443
+          cpu/total-seconds: 0.01529
+          cpu/user-seconds: 0.003846
+          duration: 1.0
+          node: node1326
+          timestamp: 1738618163
+        - cpu/system-seconds: 0.012694
+          cpu/total-seconds: 0.016961
+          cpu/user-seconds: 0.004267
+          duration: 1.0
+          node: node1326
+          timestamp: 1738618223

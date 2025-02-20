@@ -1,5 +1,5 @@
 name: 02-operational-emissions
-description: pipeline to calculate embodied emissions of CPU jobs
+description: pipeline to calculate operational emissions of CPU jobs
 tags:
 aggregation:
   metrics:
