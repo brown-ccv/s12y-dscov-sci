@@ -46,6 +46,10 @@ This manifest file calculates the embodied carbon of the CPU by leveraging the [
 
 This manifest file calculates the SCI score of the OSCAR job by combining the operational and embodied embodied emissions. The contents of the pipeline are copied from `02-operational-emissions.yml` and `03-embodied-emissions.yml`
 
+### `batch.sh`
+
+Individual manifests can be analyzed individually using the above commands, but if you have a directory of manifests in a directory `manifests/`, you can use the `batch.sh` script to output a bunch of analyses in `analyses/` and genereate a CSV with the aggregate values called `outputs.csv`.
+
 ## Jobcarbon
 
 Jobcarbon outputs yaml that is suitable for use as observations in an Impact Framework manifest. These observations are based on data in the Prometheus database. Prometheus is a timeseries database that stores information about recently run jobs
